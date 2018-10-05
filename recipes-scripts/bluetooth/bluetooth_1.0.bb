@@ -20,7 +20,7 @@ do_install() {
         install -m 0755 ${WORKDIR}/incomming_bt_spp_connection.sh ${D}${sysconfdir}/scripts
 
         install -d ${D}/home/root/activate_bluetooth
-        install -m 0755 ${WORKDIR}/bluetooth.sh ${D}/home/root/activate_bluetooth
+        install -m 0755 ${WORKDIR}/bluetooth ${D}/home/root/activate_bluetooth
         install -m 0755 ${WORKDIR}/activate_bluetooth.sh ${D}/home/root
 }
 
