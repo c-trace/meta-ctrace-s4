@@ -1,0 +1,49 @@
+#!/bin/sh
+#
+# Startup script for the Sitec S4 CAN interface
+#
+# c-trace GmbH
+# 14.03.2018
+#
+
+#-----------------------------------------------
+# variables
+#-----------------------------------------------
+INTERFACE=can0          # interface
+BUS_SPEED=250000        # bus speed in bit/s
+RESTART_DELAY=500       # restart delay time after bus-off
+
+#-----------------------------------------------
+# implementation
+#-----------------------------------------------
+# Shutdown can interface
+if [ "$1" == "stop" -o "$1" == "restart" ]; then
+    # stop CAN
+    echo "$INTERFACE: shutdown"
+    ip link set $INTERFACE down
+
+    # Switch the resistor off
+    echo 0 > /sys/class/gpio/gpio500/value
+fi
+
+# Configure and start can interface
+if [ "$1" == "start" -o "$1" == "restart" ]; then
+    # switch the resistor off
+    echo 0 > /sys/class/gpio/gpio500/value
+ 
+    # bus speed
+    echo "$INTERFACE: configure bus speed to $BUS_SPEED"
+    ip link set $INTERFACE type can bitrate $BUS_SPEED
+
+    # restart delay after bus-off state
+    echo "$INTERFACE: configure restart delay to $RESTART_DELAY"
+    ip link set $INTERFACE type can restart-ms $RESTART_DELAY
+
+    # start CAN
+    echo "$INTERFACE: start-up"
+    ip link set $INTERFACE up
+
+    # activate the transceiver
+    echo normal > /sys/bus/spi/drivers/tja1145/spi2.0/tja1145_mode
+fi
+
