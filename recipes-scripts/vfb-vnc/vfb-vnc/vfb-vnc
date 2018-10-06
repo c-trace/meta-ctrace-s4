@@ -1,0 +1,28 @@
+#!/bin/sh
+#
+# Startup script for virtual frame buffer and vnc
+#
+# c-trace GmbH / Ralf Grote
+# 06.10.2018
+#
+
+#-----------------------------------------------
+# implementation
+#-----------------------------------------------
+# Stop  
+if [ "$1" == "stop" -o "$1" == "restart" ]; then
+    echo "virtual frame buffer shutdown"
+fi
+
+# Start virtual frame buffer and vnc
+if [ "$1" == "start" -o "$1" == "restart" ]; then
+    echo "virtual frame buffer start-up"
+
+    # virtual frame buffer
+    Xvfb -screen 0 800x600x16 &
+    sleep 1
+
+    # VNC server
+    x11vnc -forever -display :0 &
+fi
+
