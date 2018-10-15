@@ -8,6 +8,7 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/LGPL-2.1;md5=1
 
 SRC_URI += "file://wlan_client"
 SRC_URI += "file://wpa_supplicant.conf"
+SRC_URI += "file://sd8887_uapsta.bin"
 
 do_install() {
         # /etc/rcS.d - während des Bootens ausführen
@@ -41,8 +42,10 @@ do_install() {
         ln -sf ../init.d/can0 ${D}${sysconfdir}/rc6.d/K90wlan_client
 
 
-        install -m 0755 ${WORKDIR}/wpa_supplicant.conf ${D}${sysconfdir}
+        install -m 0644 ${WORKDIR}/wpa_supplicant.conf ${D}${sysconfdir}
+        install -m 0644 ${WORKDIR}/sd8887_uapsta.bin ${D}/lib/firmware/mrvl
 }
 
 FILES_${PN} += "${sysconfdir}/*"
+FILES_${PN} += "/lib/firmware/mrvl/*"
 
