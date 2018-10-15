@@ -12,11 +12,14 @@ SRC_URI += "file://autostart.sh"
 do_install() {
         # /etc/rcS.d - während des Bootens ausführen
 
+        install -d ${D}${sysconfdir}/init.d        
         install -d ${D}${sysconfdir}/rcS.d
+
 
         install -m 0755 ${WORKDIR}/autostart ${D}${sysconfdir}/init.d/
 
         ln -sf ../init.d/autostart ${D}${sysconfdir}/rcS.d/S60autostart
+
 
         install -d ${D}/home/root
         install -m 0755 ${WORKDIR}/autostart.sh ${D}/home/root/
