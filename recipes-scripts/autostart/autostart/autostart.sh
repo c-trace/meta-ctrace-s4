@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Script to mount the first partition of an usbstick and extracting the inital setup files.
 # Author : Michael Richter
