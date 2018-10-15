@@ -1,0 +1,53 @@
+#!/bin/sh
+#
+# Startup script to start application
+#
+# Configures and starts an application using the variables below.
+# Desinged to be used by /opt/etc/init.d
+# 
+# c-trace GmbH / Thomas Kemner
+# 17.04.2014
+#
+
+#-----------------------------------------------
+# variables
+#-----------------------------------------------
+APPLICATION=qtTerm2                         # application filename
+APPLICATION_PARAMETERS="-display :0"        # command line parameters for the application
+APPLICATION_PATH="/opt/$APPLICATION/bin"    # path to application file
+TERMINATE_TIME=10                           # time to wait for program termination
+
+#-----------------------------------------------
+# implementation
+#-----------------------------------------------
+# Shutdown application
+if [ "$1" == "stop" -o "$1" == "restart" ]; then
+    # send terminate signal to application
+    echo "$APPLICATION: kill"
+    killall $APPLICATION &
+
+    # wait max TERMINATE_TIME for termination
+    echo "Waiting max $TERMINATE_TIME seconds for termination of $APPLICATION"
+    while [ $TERMINATE_TIME -ne 0 ]; do
+        # test if application is still in process list
+        if ! ps | grep -q "[.]/$APPLICATION" ; then
+            # if not, finished
+            echo "$APPLICATION termination finished"
+            break
+        fi
+
+        echo "... $TERMINATE_TIME seconds"
+        TERMINATE_TIME=$(( $TERMINATE_TIME - 1 ))
+        sleep 1
+    done
+fi
+
+
+# Configure and start application
+if [ "$1" == "start" -o "$1" == "restart" ]; then
+    # start application
+    echo "$APPLICATION: start-up"
+    cd $APPLICATION_PATH
+    ./$APPLICATION $APPLICATION_PARAMETERS &
+fi
+

@@ -16,7 +16,7 @@ do_install() {
 
         install -m 0755 ${WORKDIR}/autostart ${D}${sysconfdir}/init.d/
 
-        ln -sf ../init.d/autostart ${D}${sysconfdir}/rcS.d/S90autostart
+        ln -sf ../init.d/autostart ${D}${sysconfdir}/rcS.d/S60autostart
 
         install -d ${D}/home/root
         install -m 0755 ${WORKDIR}/autostart.sh ${D}/home/root/

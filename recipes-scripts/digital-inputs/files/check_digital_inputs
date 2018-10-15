@@ -1,0 +1,29 @@
+#!/bin/sh
+#
+# Startup script for managing the digital inputs
+#
+# c-trace GmbH / Sergej Knauer
+# 18.09.2018
+#
+
+#-----------------------------------------------
+# variables
+#-----------------------------------------------
+SCRIPT=check_digital_inputs.sh               # script filename
+SCRIPT_PATH="/etc/scripts"                   # path to script file
+KILL_STRING=$( ps | grep './$SCRIPT' | cut -c 1-5 | sed "s/ //g" )
+
+#-----------------------------------------------
+# implementation
+#-----------------------------------------------
+# Stop  
+if [ "$1" == "stop" -o "$1" == "restart" ]; then
+    echo "kill process with pid: $KILL_STRING"
+    kill -9 $KILL_STRING
+fi
+
+# Start manage the digital input state
+if [ "$1" == "start" -o "$1" == "restart" ]; then
+    echo "Start Script: $SCRIPT"
+    $SCRIPT_PATH/$SCRIPT &
+fi

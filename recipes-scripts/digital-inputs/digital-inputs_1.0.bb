@@ -1,14 +1,13 @@
-SUMMARY = "WLAN CLIENT"
+SUMMARY = "Digital Inputs"
 HOMEPAGE = "http://www.c-trace.de"
 MAINTAINER = "Ralf Grote <r.grote@c-trace.de>"
-DESCRIPTION = "WLAN Client"
+DESCRIPTION = "Digital Inputs"
 
 LICENSE = "LGPL-2.1"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/LGPL-2.1;md5=1a6d268fd218675ffea8be556788b780"
 
-SRC_URI += "file://wlan_client"
-SRC_URI += "file://wpa_supplicant.conf"
-SRC_URI += "file://sd8887_uapsta.bin"
+SRC_URI += "file://check_digital_inputs"
+SRC_URI += "file://check_digital_inputs.sh"
 
 do_install() {
         # /etc/rcS.d - während des Bootens ausführen
@@ -30,22 +29,13 @@ do_install() {
         install -d ${D}${sysconfdir}/rc5.d
         install -d ${D}${sysconfdir}/rc6.d
 
+        install -m 0755 ${WORKDIR}/check_digital_inputs ${D}${sysconfdir}/init.d/
 
-	install -m 0755 ${WORKDIR}/wlan_client ${D}${sysconfdir}/init.d/
+        ln -sf ../init.d/check_digital_inputs ${D}${sysconfdir}/rcS.d/S10check_digital_inputs
 
-        ln -sf ../init.d/can0 ${D}${sysconfdir}/rc0.d/K80wlan_client
-        ln -sf ../init.d/can0 ${D}${sysconfdir}/rc1.d/K80wlan_client
-        ln -sf ../init.d/can0 ${D}${sysconfdir}/rc2.d/K80wlan_client
-        ln -sf ../init.d/can0 ${D}${sysconfdir}/rc3.d/K80wlan_client
-        ln -sf ../init.d/can0 ${D}${sysconfdir}/rc4.d/S80wlan_client
-        ln -sf ../init.d/can0 ${D}${sysconfdir}/rc5.d/S80wlan_client
-        ln -sf ../init.d/can0 ${D}${sysconfdir}/rc6.d/K80wlan_client
-
-
-        install -m 0644 ${WORKDIR}/wpa_supplicant.conf ${D}${sysconfdir}
-        install -m 0644 ${WORKDIR}/sd8887_uapsta.bin ${D}/lib/firmware/mrvl
+        install -d ${D}${sysconfdir}/scripts
+        install -m 0755 ${WORKDIR}/check_digital_inputs.sh ${D}${sysconfdir}/scripts
 }
 
-FILES_${PN} += "${sysconfdir}/*"
-FILES_${PN} += "/lib/firmware/mrvl/*"
+FILES_${PN} += "${sysconfdir}/scripts/*"
 
