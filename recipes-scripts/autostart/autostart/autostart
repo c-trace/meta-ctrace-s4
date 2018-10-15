@@ -1,0 +1,30 @@
+#!/bin/sh
+#
+# Startup script for autostart script
+#
+# c-trace GmbH / Michael Richter
+# 11.10.2018
+#
+
+#-----------------------------------------------
+# variables
+#-----------------------------------------------
+SCRIPT=autostart.sh              # script filename
+SCRIPT_PATH="/home/root"         # path to script file
+KILL_STRING=$( ps | grep './$SCRIPT' | cut -c 1-5 | sed "s/ //g" )
+
+#-----------------------------------------------
+# implementation
+#-----------------------------------------------
+# Stop  
+if [ "$1" == "stop" -o "$1" == "restart" ]; then
+    echo "kill process with pid: $KILL_STRING"
+    kill -9 $KILL_STRING
+fi
+
+# Start manage the ignition state
+if [ "$1" == "start" -o "$1" == "restart" ]; then
+    echo "Start Script: $SCRIPT"
+    $SCRIPT_PATH/$SCRIPT &
+fi
+
