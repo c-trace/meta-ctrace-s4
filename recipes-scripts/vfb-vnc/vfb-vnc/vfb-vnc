@@ -19,7 +19,7 @@ if [ "$1" == "start" -o "$1" == "restart" ]; then
     echo "virtual frame buffer start-up"
 
     # virtual frame buffer
-    Xvfb -screen 0 800x600x16 &
+    Xvfb -screen 0 1020x520x16 &
     sleep 1
 
     # VNC server

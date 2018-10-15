@@ -1,0 +1,52 @@
+#!/bin/sh
+#
+# Startup script to configure 2nd RGB LED
+#
+# Configures the trigger for the internal RGB LED.
+# 
+# c-trace GmbH / Ralf Grote 
+# 09.10.2018
+#
+
+#-----------------------------------------------
+# variables
+#-----------------------------------------------
+LED_TRIGGER_DEVICE="/sys/class/leds/G2/trigger"
+TRIGGER_DEVICE_NAME="mmc1"
+
+
+#----------------------------------------------- 
+# TRIGGER description
+#
+# 	VALUE		MEANING	
+#	-------------------------------------
+#	none		no trigger, LED off
+#	heartbeat	average CPU load
+# 	nand-disk	NAND flash acivity
+#	mmc1		SD card
+#	mmc2		
+#	timer
+#	oneshot
+#	backlight
+#	gpio
+#
+# *additional parameters to be set. See docs.
+#----------------------------------------------- 
+
+
+#-----------------------------------------------
+# implementation
+#-----------------------------------------------
+# Shutdown application
+if [ "$1" == "stop" -o "$1" == "restart" ]; then
+    echo "RGB LED shutdown"
+    echo none> $LED_TRIGGER_DEVICE
+fi    
+
+# Configure and start application
+if [ "$1" == "start" -o "$1" == "restart" ]; then
+    # configure RGB LED Trigger
+    echo "Configuring RGB LED to $TRIGGER_DEVICE_NAME trigger"
+    echo $TRIGGER_DEVICE_NAME> $LED_TRIGGER_DEVICE	
+fi
+

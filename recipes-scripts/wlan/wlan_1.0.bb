@@ -1,12 +1,13 @@
-SUMMARY = "Start CAN"
+SUMMARY = "WLAN CLIENT"
 HOMEPAGE = "http://www.c-trace.de"
 MAINTAINER = "Ralf Grote <r.grote@c-trace.de>"
-DESCRIPTION = "Start CAN"
+DESCRIPTION = "WLAN Client"
 
 LICENSE = "LGPL-2.1"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/LGPL-2.1;md5=1a6d268fd218675ffea8be556788b780"
 
-SRC_URI += "file://can0"
+SRC_URI += "file://wlan_client"
+SRC_URI += "file://wpa_supplicant.conf"
 
 do_install() {
         # /etc/rcS.d - während des Bootens ausführen
@@ -29,14 +30,19 @@ do_install() {
         install -d ${D}${sysconfdir}/rc6.d
 
 
-	install -m 0755 ${WORKDIR}/can0 ${D}${sysconfdir}/init.d/
+	install -m 0755 ${WORKDIR}/wlan_client ${D}${sysconfdir}/init.d/
 
-        ln -sf ../init.d/can0 ${D}${sysconfdir}/rc0.d/K30can0
-        ln -sf ../init.d/can0 ${D}${sysconfdir}/rc1.d/K30can0
-        ln -sf ../init.d/can0 ${D}${sysconfdir}/rc2.d/K30can0
-        ln -sf ../init.d/can0 ${D}${sysconfdir}/rc3.d/K30can0
-        ln -sf ../init.d/can0 ${D}${sysconfdir}/rc4.d/S30can0
-        ln -sf ../init.d/can0 ${D}${sysconfdir}/rc5.d/S30can0
-        ln -sf ../init.d/can0 ${D}${sysconfdir}/rc6.d/K30can0
+        ln -sf ../init.d/can0 ${D}${sysconfdir}/rc0.d/K90wlan_client
+        ln -sf ../init.d/can0 ${D}${sysconfdir}/rc1.d/K90wlan_client
+        ln -sf ../init.d/can0 ${D}${sysconfdir}/rc2.d/K90wlan_client
+        ln -sf ../init.d/can0 ${D}${sysconfdir}/rc3.d/K90wlan_client
+        ln -sf ../init.d/can0 ${D}${sysconfdir}/rc4.d/S90wlan_client
+        ln -sf ../init.d/can0 ${D}${sysconfdir}/rc5.d/S90wlan_client
+        ln -sf ../init.d/can0 ${D}${sysconfdir}/rc6.d/K90wlan_client
+
+
+        install -m 0755 ${WORKDIR}/wpa_supplicant.conf ${D}${sysconfdir}
 }
+
+FILES_${PN} += "${sysconfdir}/*"
 

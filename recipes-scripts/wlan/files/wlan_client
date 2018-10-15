@@ -1,0 +1,44 @@
+#!/bin/sh
+#
+# Startup script for the Sitec S4 WLAN interface
+#
+# c-trace GmbH
+# 10.10.2018
+#
+
+#-----------------------------------------------
+# variables
+#-----------------------------------------------
+INTERFACE=mlan0         # interface
+
+#-----------------------------------------------
+# implementation
+#-----------------------------------------------
+# Shutdown WLAN interface
+if [ "$1" == "stop" -o "$1" == "restart" ]; then
+    # stop CAN
+    echo "$INTERFACE: shutdown"
+    ip link set $INTERFACE down
+    sleep 1
+    modprobe -r mwifiex_sdio
+fi
+
+# Configure and start WALN interface
+if [ "$1" == "start" -o "$1" == "restart" ]; then
+    # load driver
+    modprobe mwifiex_sdio
+
+    sleep 5
+
+    # start CAN
+    echo "$INTERFACE: start-up"
+    ip link set $INTERFACE up
+
+    # configure WLAN
+    wpa_supplicant -B -i $INTERFACE -c /etc/wpa_supplicant.conf
+
+    # look for dhcp server
+    udhcpc -i $INTERFACE &
+fi
+
+
