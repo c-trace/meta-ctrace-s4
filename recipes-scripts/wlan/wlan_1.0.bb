@@ -33,17 +33,17 @@ do_install() {
 
 	install -m 0755 ${WORKDIR}/wlan_client ${D}${sysconfdir}/init.d/
 
-        ln -sf ../init.d/can0 ${D}${sysconfdir}/rc0.d/K80wlan_client
-        ln -sf ../init.d/can0 ${D}${sysconfdir}/rc1.d/K80wlan_client
-        ln -sf ../init.d/can0 ${D}${sysconfdir}/rc2.d/K80wlan_client
-        ln -sf ../init.d/can0 ${D}${sysconfdir}/rc3.d/K80wlan_client
-        ln -sf ../init.d/can0 ${D}${sysconfdir}/rc4.d/S80wlan_client
-        ln -sf ../init.d/can0 ${D}${sysconfdir}/rc5.d/S80wlan_client
-        ln -sf ../init.d/can0 ${D}${sysconfdir}/rc6.d/K80wlan_client
+        ln -sf ../init.d/wlan_client ${D}${sysconfdir}/rc0.d/K80wlan_client
+        ln -sf ../init.d/wlan_client ${D}${sysconfdir}/rc1.d/K80wlan_client
+        ln -sf ../init.d/wlan_client ${D}${sysconfdir}/rc2.d/K80wlan_client
+        ln -sf ../init.d/wlan_client ${D}${sysconfdir}/rc3.d/K80wlan_client
+        ln -sf ../init.d/wlan_client ${D}${sysconfdir}/rc4.d/S80wlan_client
+        ln -sf ../init.d/wlan_client ${D}${sysconfdir}/rc5.d/S80wlan_client
+        ln -sf ../init.d/wlan_client ${D}${sysconfdir}/rc6.d/K80wlan_client
 
 
         install -d ${D}${sysconfdir}
-        install -m 0644 ${WORKDIR}/wpa_supplicant.conf ${D}${sysconfdir}
+        install -m 0644 ${WORKDIR}/wpa_supplicant.conf ${D}${sysconfdir}/
 
         install -d ${D}/lib/firmware/mrvl/
         install -m 0644 ${WORKDIR}/sd8887_uapsta.bin ${D}/lib/firmware/mrvl/

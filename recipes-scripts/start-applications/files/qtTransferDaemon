@@ -46,9 +46,6 @@ fi
 
 # Configure and start application
 if [ "$1" == "start" -o "$1" == "restart" ]; then
-    # call configuration script
-    echo "$APPLICATION: calling configure script $CONFIGURE_SCRIPT"
-    source $CONFIGURE_SCRIPT
     # start application
     echo "$APPLICATION: start-up"
     cd $APPLICATION_PATH
