@@ -6,7 +6,7 @@ DESCRIPTION = "Update init.d"
 LICENSE = "LGPL-2.1"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/LGPL-2.1;md5=1a6d268fd218675ffea8be556788b780"
 
-SRC_URI += "file://qtAppUpdater"
+SRC_URI += "file://ctAppUpdater"
 SRC_URI += "file://qtTransferDaemon"
 SRC_URI += "file://qtTerm2"
 
@@ -33,13 +33,13 @@ do_install() {
 
         install -m 0755 ${WORKDIR}/qtAppUpdater ${D}${sysconfdir}/init.d/
 
-        ln -sf ../init.d/qtAppUpdater ${D}${sysconfdir}/rc0.d/K90qtAppUpdater
-        ln -sf ../init.d/qtAppUpdater ${D}${sysconfdir}/rc1.d/K90qtAppUpdater
-        ln -sf ../init.d/qtAppUpdater ${D}${sysconfdir}/rc2.d/K90qtAppUpdater
-        ln -sf ../init.d/qtAppUpdater ${D}${sysconfdir}/rc3.d/K90qtAppUpdater
-        ln -sf ../init.d/qtAppUpdater ${D}${sysconfdir}/rc4.d/S90qtAppUpdater
-        ln -sf ../init.d/qtAppUpdater ${D}${sysconfdir}/rc5.d/S90qtAppUpdater
-        ln -sf ../init.d/qtAppUpdater ${D}${sysconfdir}/rc6.d/K90qtAppUpdater
+        ln -sf ../init.d/ctAppUpdater ${D}${sysconfdir}/rc0.d/K90ctAppUpdater
+        ln -sf ../init.d/ctAppUpdater ${D}${sysconfdir}/rc1.d/K90ctAppUpdater
+        ln -sf ../init.d/ctAppUpdater ${D}${sysconfdir}/rc2.d/K90ctAppUpdater
+        ln -sf ../init.d/ctAppUpdater ${D}${sysconfdir}/rc3.d/K90ctAppUpdater
+        ln -sf ../init.d/ctAppUpdater ${D}${sysconfdir}/rc4.d/S90ctAppUpdater
+        ln -sf ../init.d/ctAppUpdater ${D}${sysconfdir}/rc5.d/S90ctAppUpdater
+        ln -sf ../init.d/ctAppUpdater ${D}${sysconfdir}/rc6.d/K90ctAppUpdater
 
 
         install -m 0755 ${WORKDIR}/qtTransferDaemon ${D}${sysconfdir}/init.d/

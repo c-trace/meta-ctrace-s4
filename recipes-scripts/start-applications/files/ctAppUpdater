@@ -1,0 +1,86 @@
+#!/bin/sh
+#
+# Startup script to start application updates
+#
+# Configures and starts an application updates using the variables below.
+# Desinged to be used by /opt/etc/init.d
+# 
+# c-trace GmbH / Martin Oschlies 
+# 20.02.2013
+#
+
+#-----------------------------------------------
+# variables
+#-----------------------------------------------
+ROOT_PATH="/"
+APPLICATON=ctAppUpdater                         # application filename
+APPLICATION_PARAMETERS="-plattform offscreen"   # command line parameters for the application
+APPLICATION_PATH="/opt/$APPLICATON/bin"         # path to application file
+DOWNLOAD_FOLDER="/opt/DataStore/import"         # folder for download files
+SLEEP_TIME=20                                   # wait 20s
+
+
+#-----------------------------------------------
+# implementation
+#-----------------------------------------------
+# Shutdown application
+if [ "$1" == "stop" -o "$1" == "restart" ]; then
+    echo "$APPLICATON: kill"
+    killall $APPLICATON 2>/dev/null
+fi
+
+# Number of Files in download folder
+NUMBER_OF_DOWN_LOAD_FILES=$(find $DOWNLOAD_FOLDER -name opt*.tar.gz | wc -l)
+
+# Configure and start application
+if [ "$1" == "start" -o "$1" == "restart" ]; then
+
+    if [ $NUMBER_OF_DOWN_LOAD_FILES -gt 0 ]; then
+        echo "Found : $NUMBER_OF_DOWN_LOAD_FILES Files in $DOWNLOAD_FOLDER"
+
+        #cd to application path
+        cd $APPLICATION_PATH
+	    
+        #Start application
+        echo "$APPLICATON: start-up"
+        $APPLICATION_PATH/$APPLICATON $APPLICATION_PARAMETERS
+
+        #cd to root path
+        cd $ROOT_PATH
+
+        #Remove files from the DOWNLOAD_FOLDER
+        echo "Remove Files in $DOWNLOAD_FOLDER"
+        IFS=$'\n'
+
+        # ... *.tar.gz
+        for file in $(find $DOWNLOAD_FOLDER -name opt*.tar.gz)
+        do
+            echo "Remove file: $file"
+            rm $file
+        done
+
+        # ... *.script
+        for file in $(find $DOWNLOAD_FOLDER -name *.script)
+        do
+            echo "Remove file: $file"
+            rm $file
+        done
+
+        #Sleep before reboot
+        echo "The System will going down for reboot in $SLEEP_TIME seconds ..."
+        sleep 1
+        while [ $SLEEP_TIME -ne 0 ]
+        do
+            SLEEP_TIME=$(( $SLEEP_TIME - 1 ))
+            echo "... in $SLEEP_TIME seconds"
+            sleep 1
+        done
+
+        #Reboot the system
+        reboot
+
+    else
+        echo "Found : $NUMBER_OF_DOWN_LOAD_FILES Files in $DOWNLOAD_FOLDER. Now going to start Applications"
+    fi
+fi
+
