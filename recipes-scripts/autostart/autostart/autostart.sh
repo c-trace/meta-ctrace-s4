@@ -50,7 +50,10 @@ umountusb()
 
 #### MAIN ####
 myecho "Searching for first partition of usbstick ($usbPartition)"
-while [ ! -e $usbPartition ]; do continue; done
+while [ ! -e $usbPartition ]; do
+    sleep 1
+    continue;
+done
 
 mkdir -p $mountPoint
 

@@ -42,8 +42,10 @@ do_install() {
         ln -sf ../init.d/can0 ${D}${sysconfdir}/rc6.d/K80wlan_client
 
 
-        install -d ${D}/lib/firmware/mrvl/
+        install -d ${D}${sysconfdir}
         install -m 0644 ${WORKDIR}/wpa_supplicant.conf ${D}${sysconfdir}
+
+        install -d ${D}/lib/firmware/mrvl/
         install -m 0644 ${WORKDIR}/sd8887_uapsta.bin ${D}/lib/firmware/mrvl/
 }
 
