@@ -86,6 +86,7 @@ then
     
     myecho "Deleting $scriptDir/$scriptName"
     rm -f $scriptDir/$scriptName
+    retMv=$?
 else
     errorecho "Extraction of initial setup files failed!"
     
