@@ -81,11 +81,11 @@ then
     myecho "Initial setup files successfully exctracted."
  
     #move/rename 'path to script/name of script' to 'path to script/_name of script'
-    mv $scriptDir/$scriptName $scriptDir/_$scriptName
-    retMv=$?
+    #mv $scriptDir/$scriptName $scriptDir/_$scriptName
+    #retMv=$?
     
-#    myecho "Deleting $scriptDir/$scriptName"
-#    rm -f $scriptDir/$scriptName
+    myecho "Deleting $scriptDir/$scriptName"
+    rm -f $scriptDir/$scriptName
 else
     errorecho "Extraction of initial setup files failed!"
     

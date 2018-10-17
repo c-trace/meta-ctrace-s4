@@ -31,7 +31,7 @@ do_install() {
         install -d ${D}${sysconfdir}/rc6.d
 
 
-        install -m 0755 ${WORKDIR}/qtAppUpdater ${D}${sysconfdir}/init.d/
+        install -m 0755 ${WORKDIR}/ctAppUpdater ${D}${sysconfdir}/init.d/
 
         ln -sf ../init.d/ctAppUpdater ${D}${sysconfdir}/rc0.d/K90ctAppUpdater
         ln -sf ../init.d/ctAppUpdater ${D}${sysconfdir}/rc1.d/K90ctAppUpdater
