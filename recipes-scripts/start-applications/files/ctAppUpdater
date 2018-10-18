@@ -14,7 +14,7 @@
 #-----------------------------------------------
 ROOT_PATH="/"
 APPLICATON=ctAppUpdater                         # application filename
-APPLICATION_PARAMETERS="-plattform offscreen"   # command line parameters for the application
+APPLICATION_PARAMETERS="-platform offscreen"   # command line parameters for the application
 APPLICATION_PATH="/opt/$APPLICATON/bin"         # path to application file
 DOWNLOAD_FOLDER="/opt/DataStore/import"         # folder for download files
 SLEEP_TIME=20                                   # wait 20s
@@ -30,7 +30,10 @@ if [ "$1" == "stop" -o "$1" == "restart" ]; then
 fi
 
 # Number of Files in download folder
-NUMBER_OF_DOWN_LOAD_FILES=$(find $DOWNLOAD_FOLDER -name opt*.tar.gz | wc -l)
+NUMBER_OF_OPT_FILES=$(find $DOWNLOAD_FOLDER -name opt*.tar.gz | wc -l)
+NUMBER_OF_SCRIPT_FILES=$(find $DOWNLOAD_FOLDER -name *.script | wc -l)
+NUMBER_OF_DOWN_LOAD_FILES=$(expr $NUMBER_OF_OPT_FILES + $NUMBER_OF_SCRIPT_FILES)
+
 
 # Configure and start application
 if [ "$1" == "start" -o "$1" == "restart" ]; then
