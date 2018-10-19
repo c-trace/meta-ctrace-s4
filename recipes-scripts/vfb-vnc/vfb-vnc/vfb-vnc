@@ -23,6 +23,6 @@ if [ "$1" == "start" -o "$1" == "restart" ]; then
     sleep 1
 
     # VNC server
-    x11vnc -forever -nopw -nossl- shared -display :0 &
+    x11vnc -forever -nopw -nossl -shared -display :0 &
 fi
 
