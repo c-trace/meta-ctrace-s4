@@ -46,7 +46,7 @@ if [ "$1" == "start" -o "$1" == "restart" ]; then
 	    
         #Start application
         echo "$APPLICATON: start-up"
-        $APPLICATION_PATH/$APPLICATON $APPLICATION_PARAMETERS
+        ./$APPLICATON $APPLICATION_PARAMETERS
 
         #cd to root path
         cd $ROOT_PATH
