@@ -1,0 +1,26 @@
+#!/bin/sh
+#
+# Startup script for the Sitec S4 GPS interface
+#
+# c-trace GmbH
+# 30.11.2018
+#
+
+#-----------------------------------------------
+# implementation
+#-----------------------------------------------
+# Shutdown gps interface
+if [ "$1" == "stop" -o "$1" == "restart" ]; then
+    # disable gps module
+    echo 0 > /sys/class/gpio/gpio509/value
+fi
+
+# Configure and start gps interface
+if [ "$1" == "start" -o "$1" == "restart" ]; then
+    # Stop gpsd
+    /etc/init.d/gpsd stop
+
+    # enable gps module
+    echo 0 > /sys/class/gpio/gpio509/value
+fi
+
