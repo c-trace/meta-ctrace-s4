@@ -17,10 +17,6 @@ fi
 
 # Configure and start gps interface
 if [ "$1" == "start" -o "$1" == "restart" ]; then
-    # Stop gpsd
-    /etc/init.d/gpsd stop
-
     # enable gps module
-    echo 0 > /sys/class/gpio/gpio509/value
+    echo 1 > /sys/class/gpio/gpio509/value
 fi
-
