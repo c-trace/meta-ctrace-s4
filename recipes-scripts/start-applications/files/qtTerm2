@@ -5,7 +5,7 @@
 # Configures and starts an application using the variables below.
 # Desinged to be used by /opt/etc/init.d
 # 
-# c-trace GmbH / Thomas Kemner
+# c-trace GmbH / Thomas Kemner, Michael Richter
 # 17.04.2014
 #
 
@@ -17,20 +17,60 @@ APPLICATION_PARAMETERS="-display :0"        # command line parameters for the ap
 APPLICATION_PATH="/opt/$APPLICATION/bin"    # path to application file
 TERMINATE_TIME=10                           # time to wait for program termination
 
+QTERM2_MONITOR_PID_FILE="/var/run/qtTerm2_monitor.pid"
+APPLICATION_PID_FILE="/var/run/qtTerm2.pid"
+CHECK_TIME_SEC=10
+
 #-----------------------------------------------
-# implementation
+# functions implementation
 #-----------------------------------------------
+
+start_application()
+{
+    #delete old shared memory files
+    rm -f /tmp/qipc_sharedmemory_qtTerm* &> /dev/null
+
+    echo "$APPLICATION: start-up"
+    cd $APPLICATION_PATH
+    ./$APPLICATION $APPLICATION_PARAMETERS &
+    
+    #save pid of last started background process
+    APP_PID=$!
+    echo $APP_PID > $APPLICATION_PID_FILE
+
+    echo "qtTerm2-monitor: monitoring pid $APP_PID"
+
+    #save pid of this tarter script into file
+    echo $$ > $QTERM2_MONITOR_PID_FILE
+}
+
+
+#-----------------------------------------------
+# main implementation
+#-----------------------------------------------
+
+
 # Shutdown application
-if [ "$1" == "stop" -o "$1" == "restart" ]; then
+if [ "$1" == "stop" -o "$1" == "restart" ]
+then
     # send terminate signal to application
     echo "$APPLICATION: kill"
-    killall $APPLICATION &
+
+    echo "Killing old qtTerm2 monitor."
+    kill $( cat $QTERM2_MONITOR_PID_FILE ) &> /dev/null
+    
+
+    #kill application by pid from pid file
+    kill $( cat $APPLICATION_PID_FILE ) &> /dev/null
 
     # wait max TERMINATE_TIME for termination
     echo "Waiting max $TERMINATE_TIME seconds for termination of $APPLICATION"
-    while [ $TERMINATE_TIME -ne 0 ]; do
+
+    while [ $TERMINATE_TIME -ne 0 ]
+    do
         # test if application is still in process list
-        if ! ps | grep -q "[.]/$APPLICATION" ; then
+        if ! ps | grep -q "[.]/$APPLICATION"
+	    then
             # if not, finished
             echo "$APPLICATION termination finished"
             break
@@ -40,14 +80,51 @@ if [ "$1" == "stop" -o "$1" == "restart" ]; then
         TERMINATE_TIME=$(( $TERMINATE_TIME - 1 ))
         sleep 1
     done
+
+    #delete shared memory files
+    rm -f /tmp/qipc_sharedmemory_qtTerm* &> /dev/null
+
+    #delete monitor script pid file
+    rm -f $QTERM2_MONITOR_PID_FILE &> /dev/null
+
+    #delete application pid file
+    rm -f $APPLICATION_PID_FILE &> /dev/null
 fi
 
-
 # Configure and start application
-if [ "$1" == "start" -o "$1" == "restart" ]; then
+if [ "$1" == "start" -o "$1" == "restart" ]
+then
+    #check if the pid is not equal to own pid
+    if [ -f QTERM2_MONITOR_PID_FILE -a  $$ -ne  $( cat $QTERM2_MONITOR_PID_FILE ) ] &> /dev/null
+    then
+        echo "Killing old qtTerm2 monitor.1"
+        #kill old monitor script if necessary
+        kill $( cat $QTERM2_MONITOR_PID_FILE ) &> /dev/null
+    fi
+
+    # start this script in monitor mode and exit
+    echo "Starting qtTerm2 monitor."
+    $0 monitor &
+fi
+
+if [ "$1" == "monitor" ]
+then
+    echo "qtTerm2 monitor running."
+    
     # start application
-    echo "$APPLICATION: start-up"
-    cd $APPLICATION_PATH
-    ./$APPLICATION $APPLICATION_PARAMETERS &
+    start_application
+    
+    #endless loop: monitor application, if it exits then restart it
+    while :
+    do
+        #if application is not running, then restart the application
+        if kill -0 $APP_PID &> /dev/null
+        then
+            sleep $CHECK_TIME_SEC
+        else
+            start_application
+        fi
+    done 
+
 fi
 
