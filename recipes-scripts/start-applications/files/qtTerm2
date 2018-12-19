@@ -12,14 +12,12 @@
 #-----------------------------------------------
 # variables
 #-----------------------------------------------
-APPLICATION=qtTerm2                         # application filename
-APPLICATION_PARAMETERS="-display :0"        # command line parameters for the application
-APPLICATION_PATH="/opt/$APPLICATION/bin"    # path to application file
-TERMINATE_TIME=10                           # time to wait for program termination
-
-QTERM2_MONITOR_PID_FILE="/var/run/qtTerm2_monitor.pid"
-APPLICATION_PID_FILE="/var/run/qtTerm2.pid"
-CHECK_TIME_SEC=10
+APPLICATION=qtTerm2                                         # application filename
+APPLICATION_PARAMETERS="-display :0"                        # command line parameters for the application
+APPLICATION_PATH="/opt/$APPLICATION/bin"                    # path to application file
+TERMINATE_TIME=10                                           # time to wait for program termination in seconds
+SHARED_MEMORY_FILES_EXP="/tmp/qipc_sharedmemory_qtTerm*"    # expression for the shared memory files of this application
+CHECK_TIME_SEC=10                                           # time between checks for the running application in seconds
 
 #-----------------------------------------------
 # functions implementation
@@ -28,7 +26,7 @@ CHECK_TIME_SEC=10
 start_application()
 {
     #delete old shared memory files
-    rm -f /tmp/qipc_sharedmemory_qtTerm* &> /dev/null
+    rm -f $SHARED_MEMORY_FILES_EXP &> /dev/null
 
     echo "$APPLICATION: start-up"
     cd $APPLICATION_PATH
@@ -36,12 +34,43 @@ start_application()
     
     #save pid of last started background process
     APP_PID=$!
-    echo $APP_PID > $APPLICATION_PID_FILE
-
     echo "qtTerm2-monitor: monitoring pid $APP_PID"
+}
 
-    #save pid of this tarter script into file
-    echo $$ > $QTERM2_MONITOR_PID_FILE
+kill_application_processes()
+{
+    echo "Kill $APPLICATION"
+    
+    ps | grep $APPLICATION | while read line
+    do
+        #filter: not this script and not grep
+        if [[ ! $line == *$0* && ! $line == *grep* ]]
+        then
+            #get first element (pid) of line separated by " " (a space)
+            pid=${line%% *}
+
+            echo "Killing $pid"
+            kill $pid
+        fi   
+    done
+}
+
+kill_other_monitor_processes()
+{
+    echo "Kill $APPLICATION monitor"
+    
+    ps | grep $0 | while read line
+    do
+        #get first element (pid) of line separated by " " (a space)
+        pid=${line%% *}
+        
+        #filter: not the same process id, not grep and running with monitor parameter
+        if [ $$ -ne $pid ] && [[ ! $line == *grep* && $line == *monitor* ]] 
+        then
+            echo "Killing $pid"
+            kill $pid
+        fi
+    done
 }
 
 
@@ -51,17 +80,13 @@ start_application()
 
 
 # Shutdown application
-if [ "$1" == "stop" -o "$1" == "restart" ]
+if [ "$1" == "stop" -o "$1" == "start" -o "$1" == "restart" ]
 then
+    # send terminate to application monitor
+    kill_other_monitor_processes    
+
     # send terminate signal to application
-    echo "$APPLICATION: kill"
-
-    echo "Killing old qtTerm2 monitor."
-    kill $( cat $QTERM2_MONITOR_PID_FILE ) &> /dev/null
-    
-
-    #kill application by pid from pid file
-    kill $( cat $APPLICATION_PID_FILE ) &> /dev/null
+    kill_application_processes
 
     # wait max TERMINATE_TIME for termination
     echo "Waiting max $TERMINATE_TIME seconds for termination of $APPLICATION"
@@ -83,45 +108,33 @@ then
 
     #delete shared memory files
     rm -f /tmp/qipc_sharedmemory_qtTerm* &> /dev/null
-
-    #delete monitor script pid file
-    rm -f $QTERM2_MONITOR_PID_FILE &> /dev/null
-
-    #delete application pid file
-    rm -f $APPLICATION_PID_FILE &> /dev/null
 fi
 
 # Configure and start application
 if [ "$1" == "start" -o "$1" == "restart" ]
 then
-    #check if the pid is not equal to own pid
-    if [ -f QTERM2_MONITOR_PID_FILE -a  $$ -ne  $( cat $QTERM2_MONITOR_PID_FILE ) ] &> /dev/null
-    then
-        echo "Killing old qtTerm2 monitor.1"
-        #kill old monitor script if necessary
-        kill $( cat $QTERM2_MONITOR_PID_FILE ) &> /dev/null
-    fi
-
     # start this script in monitor mode and exit
-    echo "Starting qtTerm2 monitor."
+    echo "Starting $APPLICATION monitor."
     $0 monitor &
 fi
 
 if [ "$1" == "monitor" ]
 then
-    echo "qtTerm2 monitor running."
-    
     # start application
     start_application
     
     #endless loop: monitor application, if it exits then restart it
     while :
     do
-        #if application is not running, then restart the application
+        #send signal 0 to application process, to check that the application is running, if not restart the application
         if kill -0 $APP_PID &> /dev/null
         then
             sleep $CHECK_TIME_SEC
         else
+            #kill zombie processes
+            kill_application_processes
+            
+            #start the application
             start_application
         fi
     done 
