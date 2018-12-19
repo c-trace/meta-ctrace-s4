@@ -17,22 +17,86 @@ APPLICATION=qtTransferDaemon                # application filename
 APPLICATION_PARAMETERS=""                   # command line parameters for the application
 APPLICATION_PATH="/opt/$APPLICATION/bin"    # path to application file
 TERMINATE_TIME=5                            # time to wait for program termination
+SHARED_MEMORY_FILES_EXP="/tmp/qipc_sharedmemory_qtTransferDaemon*"      # expression for the shared memory files of this application
+CHECK_TIME_SEC=10                                                       # time between checks for the running application in seconds
+
+#-----------------------------------------------
+# functions implementation
+#-----------------------------------------------
+
+start_application()
+{
+    #delete old shared memory files
+    rm -f $SHARED_MEMORY_FILES_EXP &> /dev/null
+
+    echo "$APPLICATION: start-up"
+    cd $APPLICATION_PATH
+    nice -10 ./$APPLICATION $APPLICATION_PARAMETERS &
+    
+    #save pid of last started background process
+    APP_PID=$!
+    echo "$APPLICATION-monitor: monitoring pid $APP_PID"
+}
+
+kill_application_processes()
+{
+    echo "Kill $APPLICATION"
+    
+    ps | grep $APPLICATION | while read line
+    do
+        #filter: not this script and not grep
+        if [[ ! $line == *$0* && ! $line == *grep* ]]
+        then
+            #get first element (pid) of line separated by " " (a space)
+            pid=${line%% *}
+
+            echo "Killing $pid"
+            kill $pid
+        fi   
+    done
+}
+
+kill_other_monitor_processes()
+{
+    echo "Kill $APPLICATION monitor"
+    
+    ps | grep $0 | while read line
+    do
+        #get first element (pid) of line separated by " " (a space)
+        pid=${line%% *}
+        
+        #filter: not the same process id, not grep and running with monitor parameter
+        if [ $$ -ne $pid ] && [[ ! $line == *grep* && $line == *monitor* ]] 
+        then
+            echo "Killing $pid"
+            kill $pid
+        fi
+    done
+}
 
 
 #-----------------------------------------------
-# implementation
+# main implementation
 #-----------------------------------------------
+
+
 # Shutdown application
-if [ "$1" == "stop" -o "$1" == "restart" ]; then
+if [ "$1" == "stop" -o "$1" == "start" -o "$1" == "restart" ]
+then
+    # send terminate to application monitor
+    kill_other_monitor_processes    
+
     # send terminate signal to application
-    echo "$APPLICATION: kill"
-    killall $APPLICATION &
+    kill_application_processes
 
     # wait max TERMINATE_TIME for termination
     echo "Waiting max $TERMINATE_TIME seconds for termination of $APPLICATION"
-    while [ $TERMINATE_TIME -ne 0 ]; do
+
+    while [ $TERMINATE_TIME -ne 0 ]
+    do
         # test if application is still in process list
-        if ! ps | grep -q "[.]/$APPLICATION" ; then
+        if ! ps | grep -q "[.]/$APPLICATION"
+	    then
             # if not, finished
             echo "$APPLICATION termination finished"
             break
@@ -42,13 +106,40 @@ if [ "$1" == "stop" -o "$1" == "restart" ]; then
         TERMINATE_TIME=$(( $TERMINATE_TIME - 1 ))
         sleep 1
     done
-fi 
+
+    #delete shared memory files
+    rm -f $SHARED_MEMORY_FILES_EXP &> /dev/null
+fi
 
 # Configure and start application
-if [ "$1" == "start" -o "$1" == "restart" ]; then
-    # start application
-    echo "$APPLICATION: start-up"
-    cd $APPLICATION_PATH
-    nice -10 ./$APPLICATION $APPLICATION_PARAMETERS &
+if [ "$1" == "start" -o "$1" == "restart" ]
+then
+    # start this script in monitor mode and exit
+    echo "Starting $APPLICATION monitor"
+    $0 monitor &
 fi
+
+if [ "$1" == "monitor" ]
+then
+    # start application
+    start_application
+    
+    #endless loop: monitor application, if it exits then restart it
+    while :
+    do
+        #send signal 0 to application process, to check that the application is running, if not restart the application
+        if kill -0 $APP_PID &> /dev/null
+        then
+            sleep $CHECK_TIME_SEC
+        else
+            #kill zombie processes
+            kill_application_processes
+            
+            #start the application
+            start_application
+        fi
+    done 
+
+fi
+
 
