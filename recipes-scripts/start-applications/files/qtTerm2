@@ -107,7 +107,7 @@ then
     done
 
     #delete shared memory files
-    rm -f /tmp/qipc_sharedmemory_qtTerm* &> /dev/null
+    rm -f $SHARED_MEMORY_FILES_EXP &> /dev/null
 fi
 
 # Configure and start application
