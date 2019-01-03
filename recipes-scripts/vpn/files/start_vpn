@@ -1,0 +1,38 @@
+#!/bin/sh
+#
+# Startup script for the Sitec S4 vpn tunneling
+#
+# c-trace GmbH
+# 02.01.2019
+#
+
+#-----------------------------------------------
+# variables
+#-----------------------------------------------
+SCRIPT=start_vpn.sh               # script filename
+SCRIPT_PATH="/etc/scripts/vpn"    # path to script file
+OPENVPN_CLIENT=openvpn
+KILL_SCRIPT_STRING=$( ps | grep './$SCRIPT' | cut -c 1-5 | sed "s/ //g" )
+KILL_VPN_STRING=$( ps | grep '$OPENVPN_CLIENT' | grep -v grep | cut -c 1-5 | sed "s/ //g" )
+
+#-----------------------------------------------
+# implementation
+#-----------------------------------------------
+# Stop
+if [ "$1" == "stop" -o "$1" == "restart" ]; then
+    if [ -n "$KILL_SCRIPT_STRING" ]; then
+        kill -9 $KILL_SCRIPT_STRING
+    fi
+
+    if [ -n "$KILL_VPN_STRING" ]; then
+        kill -9 $KILL_VPN_STRING
+        sleep 10
+    fi
+fi
+
+# Start
+if [ "$1" == "start" -o "$1" == "restart" ]; then
+    echo "Start Script: $SCRIPT"
+    $SCRIPT_PATH/$SCRIPT &
+fi
+
