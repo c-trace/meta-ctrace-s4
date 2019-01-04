@@ -17,7 +17,7 @@ SLEEP=120
 while [ true ] ; do
     interface_string=$( ifconfig | grep '^tun0' | cut -c 1-4 )
     if [ -n "$interface_string" ]; then
-        # echo "vpn is running"
+        echo "vpn is running"
     else
         echo "vpn is not running. Start..."
 
