@@ -10,7 +10,7 @@
 # variables
 #-----------------------------------------------
 OPENVPN_CLIENT=openvpn
-OPENVPN_CLIENT_DIR="/etc/scripts/vpn"
+OPENVPN_CLIENT_DIR="/opt/scripts/vpn"
 PARAMETER="wachendorff.vpn.c-trace.de.ovpn"
 SLEEP=120
 
