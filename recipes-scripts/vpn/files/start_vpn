@@ -12,18 +12,18 @@
 SCRIPT=start_vpn.sh               # script filename
 SCRIPT_PATH="/etc/scripts/vpn"    # path to script file
 OPENVPN_CLIENT=openvpn
-KILL_SCRIPT_STRING=$( ps | grep './$SCRIPT' | cut -c 1-5 | sed "s/ //g" )
-KILL_VPN_STRING=$( ps | grep '$OPENVPN_CLIENT' | grep -v grep | cut -c 1-5 | sed "s/ //g" )
 
 #-----------------------------------------------
 # implementation
 #-----------------------------------------------
 # Stop
 if [ "$1" == "stop" -o "$1" == "restart" ]; then
+    KILL_SCRIPT_STRING=$( ps | grep $SCRIPT | cut -c 1-5 | sed "s/ //g" )
     if [ -n "$KILL_SCRIPT_STRING" ]; then
         kill -9 $KILL_SCRIPT_STRING
     fi
 
+    KILL_VPN_STRING=$( ps | grep $OPENVPN_CLIENT | grep -v grep | cut -c 1-5 | sed "s/ //g" )
     if [ -n "$KILL_VPN_STRING" ]; then
         kill -9 $KILL_VPN_STRING
         sleep 10
