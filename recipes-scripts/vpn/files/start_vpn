@@ -10,7 +10,7 @@
 # variables
 #-----------------------------------------------
 SCRIPT=start_vpn.sh               # script filename
-SCRIPT_PATH="/etc/scripts/vpn"    # path to script file
+SCRIPT_PATH="/opt/scripts/vpn"    # path to script file
 OPENVPN_CLIENT=openvpn
 KILL_SCRIPT_STRING=$( ps | grep './$SCRIPT' | cut -c 1-5 | sed "s/ //g" )
 KILL_VPN_STRING=$( ps | grep '$OPENVPN_CLIENT' | grep -v grep | cut -c 1-5 | sed "s/ //g" )
