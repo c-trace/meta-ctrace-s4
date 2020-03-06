@@ -1,6 +1,6 @@
 SUMMARY = "Ignition Status"
 HOMEPAGE = "http://www.c-trace.de"
-MAINTAINER = "Sergej Knauer <s.knauer@c-trace.de>"
+MAINTAINER = "SergejKnauer <s.knauer@c-trace.de>"
 DESCRIPTION = "Ignition Status"
 
 LICENSE = "LGPL-2.1"
