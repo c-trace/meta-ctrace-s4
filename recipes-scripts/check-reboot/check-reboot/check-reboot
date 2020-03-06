@@ -1,0 +1,14 @@
+#!/bin/sh
+#
+# Script to check Ignitionstate while shutdown
+#
+# c-trace GmbH
+# 05.03.2020
+#
+
+IGN=$( cat /sys/class/gpio/gpio90/value)
+
+if [ $IGN -eq 0 ]; then
+	shutdown -c
+	reboot
+fi
