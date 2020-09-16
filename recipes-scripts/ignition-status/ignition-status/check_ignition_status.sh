@@ -11,7 +11,8 @@
 #-----------------------------------------------
 while [ true ]
 do
-    for i in {1..60}
+    DELAY=$( cat /etc/scripts/shutdown_delay)
+    for i in $(seq 1 $DELAY)
     do
         sleep 1
         IGN=$( cat /sys/class/gpio/gpio90/value)

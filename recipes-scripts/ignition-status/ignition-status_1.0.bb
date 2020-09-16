@@ -35,6 +35,7 @@ do_install() {
 
         install -d ${D}${sysconfdir}/scripts
         install -m 0755 ${WORKDIR}/check_ignition_status.sh ${D}${sysconfdir}/scripts
+        install -m 0755 ${WORKDIR}/shutdown_delay ${D}${sysconfdir}/scripts
 }
 
 FILES_${PN} += "${sysconfdir}/scripts/*"

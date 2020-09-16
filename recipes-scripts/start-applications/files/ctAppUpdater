@@ -51,23 +51,6 @@ if [ "$1" == "start" -o "$1" == "restart" ]; then
         #cd to root path
         cd $ROOT_PATH
 
-        #Remove files from the DOWNLOAD_FOLDER
-        echo "Remove Files in $DOWNLOAD_FOLDER"
-        IFS=$'\n'
-
-        # ... *.tar.gz
-        for file in $(find $DOWNLOAD_FOLDER -name opt*.tar.gz)
-        do
-            echo "Remove file: $file"
-            rm $file
-        done
-
-        # ... *.script
-        for file in $(find $DOWNLOAD_FOLDER -name *.script)
-        do
-            echo "Remove file: $file"
-            rm $file
-        done
 
         #Sleep before reboot
         echo "The System will going down for reboot in $SLEEP_TIME seconds ..."
