@@ -8,6 +8,7 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/LGPL-2.1;md5=1
 
 SRC_URI += "file://check_ignition_status"
 SRC_URI += "file://check_ignition_status.sh"
+SRC_URI += "file://shutdown_delay"
 
 do_install() {
         # /etc/rcS.d - während des Bootens ausführen
