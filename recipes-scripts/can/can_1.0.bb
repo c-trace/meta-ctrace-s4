@@ -7,6 +7,7 @@ LICENSE = "LGPL-2.1"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/LGPL-2.1;md5=1a6d268fd218675ffea8be556788b780"
 
 SRC_URI += "file://can0"
+SRC_URI += "file://can1"
 
 do_install() {
         # /etc/rcS.d - während des Bootens ausführen
@@ -38,5 +39,13 @@ do_install() {
         ln -sf ../init.d/can0 ${D}${sysconfdir}/rc4.d/S30can0
         ln -sf ../init.d/can0 ${D}${sysconfdir}/rc5.d/S30can0
         ln -sf ../init.d/can0 ${D}${sysconfdir}/rc6.d/K30can0
+		
+        ln -sf ../init.d/can1 ${D}${sysconfdir}/rc0.d/K35can1
+        ln -sf ../init.d/can1 ${D}${sysconfdir}/rc1.d/K35can1
+        ln -sf ../init.d/can1 ${D}${sysconfdir}/rc2.d/K35can1
+        ln -sf ../init.d/can1 ${D}${sysconfdir}/rc3.d/K35can1
+        ln -sf ../init.d/can1 ${D}${sysconfdir}/rc4.d/S35can1
+        ln -sf ../init.d/can1 ${D}${sysconfdir}/rc5.d/S35can1
+        ln -sf ../init.d/can1 ${D}${sysconfdir}/rc6.d/K35can1
 }
 
