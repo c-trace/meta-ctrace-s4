@@ -31,6 +31,7 @@ do_install() {
 
 
 	install -m 0755 ${WORKDIR}/can0 ${D}${sysconfdir}/init.d/
+	install -m 0755 ${WORKDIR}/can1 ${D}${sysconfdir}/init.d/
 
         ln -sf ../init.d/can0 ${D}${sysconfdir}/rc0.d/K30can0
         ln -sf ../init.d/can0 ${D}${sysconfdir}/rc1.d/K30can0
