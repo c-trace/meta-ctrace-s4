@@ -12,14 +12,19 @@
 while [ true ]
 do
     DELAY=$( cat /etc/scripts/shutdown_delay)
-    for i in $(seq 1 $DELAY)
-    do
-        sleep 1
-        IGN=$( cat /sys/class/gpio/gpio90/value)
-        if [ $IGN -eq 0 ]; then 
-            break
-        fi
-    done
+	if [ $DELAY -gt 0 ]; then
+		for i in $(seq 1 $DELAY)
+		do
+			sleep 1
+			IGN=$( cat /sys/class/gpio/gpio90/value)
+			if [ $IGN -eq 0 ]; then 
+				break
+			fi
+		done
+	else
+		sleep 1
+		IGN=$( cat /sys/class/gpio/gpio90/value)
+	fi
 
     if [ $IGN -eq 1 ]; then
         echo "Shutdown the system"	
